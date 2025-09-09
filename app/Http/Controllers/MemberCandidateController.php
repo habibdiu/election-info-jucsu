@@ -48,7 +48,7 @@ class MemberCandidateController extends Controller
             }
         }
 
-        return view('member_candidate_add', compact('data'));
+        return view('member_candidate_list', compact('data'));
     }
 
 
@@ -95,7 +95,7 @@ class MemberCandidateController extends Controller
             }
         }
 
-        return view('member_candidate_edit', compact('data'));
+        return view('member_candidate_list', compact('data'));
     }
 
     public function member_candidate_list()
@@ -104,8 +104,10 @@ class MemberCandidateController extends Controller
         $data['member_candidate_list'] = MemberCandidate::with(['position', 'election_area'])->paginate(10);
         $data['positions'] = Position::all();
         $data['election_areas'] = ElectionArea::all();
-        return view('member_candidate_list', compact('data'));
+
+        return view('member_candidate_list', ['data' => $data]);
     }
+
 
 
     public function member_candidate_delete($id)

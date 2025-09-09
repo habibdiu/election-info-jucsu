@@ -16,11 +16,16 @@
                 <div class="card-body">
                     <div class="position-relative mb-3">
                         <h3 class="fw-bold text-center mb-0">Position List</h3>
-                        <a href="{{ route('position.add') }}" class="btn btn-primary btn-sm position-absolute end-0 top-50 translate-middle-y">
+                        <a href="#" class="btn btn-primary btn-sm position-absolute end-0 top-50 translate-middle-y" data-bs-toggle="modal" data-bs-target="#addPositionModal">
                             <i class="fa-solid fa-plus"></i> Add
                         </a>
                     </div>
-
+                    @if (session('success'))
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <strong>Success!</strong> {{ session('success') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
 
                     @if (session('error'))
                         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -34,36 +39,97 @@
                         <table id="dataTableExample" class="table table-hover table-striped table-sm align-middle table-responsive">
                             <thead class="table-light">
                             <tr>
-                                <th>SL</th>
-                                <th>Name</th>
-                                <th>Total Candidate</th>
-                                <th>Max Valid Vote</th>
-                                <th>Min Valid Vote</th>
-                                <th>Election Area</th>
-                                <th>Priority</th>
-                                <th style="width:15%">Action</th>
+                                <tr>
+                                    <th>SL</th>
+                                    <th>Name</th>
+                                    <th>Total Candidate</th>
+                                    <th>Max Valid Vote</th>
+                                    <th>Min Valid Vote</th>
+                                    <th>Election Area</th>
+                                    <th>Priority</th>
+                                    <th style="width:15%">Action</th>
+                                </tr>
                             </tr>
                             </thead>
                             <tbody>
-                                @foreach ($data['position_list'] as $index => $single_position)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>{{ $single_position->name }}</td><td>{{ $single_position->position->name ?? '-' }}</td>
-                                        <td>{{ $single_position->details }}</td>
-                                        <td>{{ $single_position->election_area->name ?? '-' }}</td>
-                                        <td>{{ $single_position->member_no }}</td>
-                                        <td>{{ $single_position->ballot_no }}</td>
-                                        <td>
-                                            <a href="{{ route('position.edit', $single_position->id) }}"
-                                            class="btn btn-success btn-sm"><i class="fa-solid fa-edit"></i></a>
-                                            <button class="btn btn-danger btn-sm delete-btn"
-                                                    data-id="{{ $single_position->id }}">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                            @foreach ($data['position_list'] as $index => $position)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $position->name }}</td>
+                                    <td>{{ $position->total_candidate }}</td>
+                                    <td>{{ $position->max_valid_vote }}</td>
+                                    <td>{{ $position->min_valid_vote }}</td>
+                                    <td>{{ $position->election_area->name ?? '-' }}</td>
+                                    <td>{{ $position->priority }}</td>
+                                    <td>
+                                        <a href="{{ route('position.edit', $position->id) }}"
+                                        class="btn btn-success btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editPositionModal{{ $position->id }}">
+                                            <i class="fa-solid fa-edit"></i>
+                                        </a>
+                                        <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $position->id }}">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </td>
+
+                                </tr>
+
+                                <!-- Edit Position Modal -->
+                                <div class="modal fade" id="editPositionModal{{ $position->id }}" tabindex="-1" aria-labelledby="editPositionModalLabel{{ $position->id }}" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <form action="{{ route('position.edit', $position->id) }}" method="POST">
+                                                @csrf
+
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editPositionModalLabel{{ $position->id }}">Edit Position</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    <div class="row g-3">
+                                                        <div class="col-md-4">
+                                                            <label for="name{{ $position->id }}" class="form-label">Position Name</label>
+                                                            <input type="text" class="form-control" id="name{{ $position->id }}" name="name" value="{{ $position->name }}" required>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label for="total_candidate{{ $position->id }}" class="form-label">Total Candidate</label>
+                                                            <input type="number" class="form-control" id="total_candidate{{ $position->id }}" name="total_candidate" value="{{ $position->total_candidate }}" min="1" required>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label for="max_valid_vote{{ $position->id }}" class="form-label">Max Valid Vote</label>
+                                                            <input type="number" class="form-control" id="max_valid_vote{{ $position->id }}" name="max_valid_vote" value="{{ $position->max_valid_vote }}" min="0" required>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label for="min_valid_vote{{ $position->id }}" class="form-label">Min Valid Vote</label>
+                                                            <input type="number" class="form-control" id="min_valid_vote{{ $position->id }}" name="min_valid_vote" value="{{ $position->min_valid_vote }}" min="0" required>
+                                                        </div>
+
+                                                        <div class="col-md-4">
+                                                            <label for="priority{{ $position->id }}" class="form-label">Priority</label>
+                                                            <input type="number" class="form-control" id="priority{{ $position->id }}" name="priority" value="{{ $position->priority }}" min="1" required>
+                                                        </div>
+
+                                                        
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Update</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- End of Edit Position Modal -->
+                            @endforeach
                             </tbody>
+
                         </table>
                         <div class="d-flex justify-content-end">
                             {{ $data['position_list']->links('pagination::bootstrap-5') }}
@@ -74,6 +140,59 @@
         </div>
     </div>
 </div>
+
+<!-- Modal for Add Position -->
+<div class="modal fade" id="addPositionModal" tabindex="-1" aria-labelledby="addPositionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 justify-content-center position-relative">
+                <h4 class="modal-title text-center" id="addPositionModalLabel">Add Position</h4>
+                <button type="button" class="btn-close position-absolute end-0" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form action="{{ route('position.add') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="total_candidate" class="form-label">Total Candidate</label>
+                            <input type="number" class="form-control" id="total_candidate" name="total_candidate" min="1" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="max_valid_vote" class="form-label">Max Valid Vote</label>
+                            <input type="number" class="form-control" id="max_valid_vote" name="max_valid_vote" min="0" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="min_valid_vote" class="form-label">Min Valid Vote</label>
+                            <input type="number" class="form-control" id="min_valid_vote" name="min_valid_vote" min="0" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="priority" class="form-label">Priority</label>
+                            <input type="number" class="form-control" id="priority" name="priority" min="1" required>
+                        </div>
+                    </div>
+
+
+
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Add</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- End of Add Position Modal -->
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).on('click', '.delete-btn', function () {

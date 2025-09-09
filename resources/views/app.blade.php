@@ -11,7 +11,7 @@
         <h2 class="mb-5">JUCSU Election 2025</h2>
         <div class="row justify-content-center">
             <div class="col-md-3 mb-5">
-                <a href="{{ route('member_candidate.list') }}" class="btn btn-primary btn-block py-2">
+                <a href="{{ route('member.candidate.list') }}" class="btn btn-primary btn-block py-2">
                     Member Candidates
                 </a>
             </div>

@@ -12,10 +12,10 @@ Route::get('/', function () {
 
 
 //Member Candidate Routes
-Route::match(['get', 'post'], 'member/candidate/add', [MemberCandidateController::class, 'member_candidate_add'])->name('member_candidate.add');
-Route::match(['get', 'post'], 'member/candidate/edit/{id}', [MemberCandidateController::class, 'member_candidate_edit'])->name('member_candidate.edit');
-Route::get('member/candidate/list',[MemberCandidateController::class,'member_candidate_list'])->name('member_candidate.list');
-Route::delete('member/candidate/delete/{id}',[MemberCandidateController::class,'member_candidate_delete'])->name('member_candidate.delete');
+Route::match(['get', 'post'], 'member/candidate/add', [MemberCandidateController::class, 'member_candidate_add'])->name('member.candidate.add');
+Route::match(['get', 'post'], 'member/candidate/edit/{id}', [MemberCandidateController::class, 'member_candidate_edit'])->name('member.candidate.edit');
+Route::get('member/candidate/list',[MemberCandidateController::class,'member_candidate_list'])->name('member.candidate.list');
+Route::delete('member/candidate/delete/{id}',[MemberCandidateController::class,'member_candidate_delete'])->name('member.candidate.delete');
 
 
 
